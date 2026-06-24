@@ -1,4 +1,4 @@
-# AntifragiCity---AHEPA-Hospital-Model
+# AntifragiCity_AHEPA Hospital Model
 Overview
 The AHEPA Hospital Model is an agent-based Decision Support System pilot developed to study and optimize patient transit to the AHEPA tertiary hospital in Thessaloniki, Greece under varying traffic demand conditions and supply disruptions. The model forms part of AntifragiCity Deliverable D3.4 and serves as a sandbox for evaluating shuttle-based response strategies that can preserve or restore accessibility when urban mobility is degraded.
 The model captures the traffic-informed underlay of the city of Thessaloniki — including its boundaries, expected traffic levels, and primary road network — and uses it to simulate how patients travel to the hospital amid both routine congestion and emergency-style disruptions.
