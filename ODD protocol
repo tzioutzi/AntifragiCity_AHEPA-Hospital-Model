@@ -1,0 +1,100 @@
+AHEPA Hospital Model
+WHAT IS IT?
+The AHEPA Hospital Model is an agent-based Decision Support System pilot designed to study and optimise patient access to the AHEPA tertiary hospital in Thessaloniki, Greece under varying traffic demand conditions and supply disruptions. It is one of three pilot case studies (alongside Bratislava and Larissa) developed within the AntifragiCity project as the empirical workhorse of Deliverable D3.4 — Mobility Triage Analysis DSS .
+The model serves three purposes:
+1.	Capture the traffic-informed underlay of Thessaloniki — city boundaries, expected traffic levels and the primary road network — using the TomTom Traffic Index as a granular baseline for traffic levels and travel durations.
+2.	Simulate patient self-arrival when more than 80% of emergency admissions occur via personal (non-ambulance) transport, with the bulk of admissions concentrated between 08:00 and 23:00 and local peaks coinciding with the city's rush hours.
+3.	Test shuttle-based response strategies (R1, R2, R3) under normal and disrupted mobility conditions so operators can identify which intervention best preserves accessibility when a city's transport network is stressed.
+HOW IT WORKS
+The model follows an ontological structure where the city is represented as a network, the vehicles are autonomous agents, and the hospital acts as a central attractor.
+1. The Traffic Underlay
+The agent-based model features the traffic-informed underlay of the city of Thessaloniki, including city boundaries, expected traffic levels, and the primary road network. Intersections are modelled as nodes, road segments as links, and intersections function as local congestion attractors that dynamically influence traffic flow patterns throughout the network . Travel durations per origin area are calibrated against real-world data from the Google Maps API, averaged over 50 repetitive trial simulations per origin to obtain a statistically sound baseline at average traffic conditions.
+2. The Agents
+The model contains three core agent populations :
+Agent type	Role in the model
+Cars	Autonomous agents with randomized origins and destinations within the city that act as obstacles for the movement of patients .
+
+Patients	Autonomous agents that try to travel towards the hospital . Origins are user-defined.
+AHEPA Hospital	A single agent that serves as an attractor for the activity-based circulation of patients, with two identified entrance nodes that act as the primary access points for patient inflows .
+
+Patient origins are spatially distributed across municipalities and municipal units (Figure 5.3 in the report), and trip assignments to origin areas are drawn from the actual AHEPA admissions records of January 2023 – September 2025 .
+3. Behavioural Rules
+•	Cars move along the network from their randomized origin to a randomized destination, occupying links and acting as impedance to other agents on links.
+•	Patients attempt to travel to the hospital along their selected corridor; travel durations are stochastic to account for both routine urban congestion and fluctuating emergency demand.
+•	Intersections locally amplify congestion, so movement speed decreases in their vicinity, dynamically altering the broader travel-time distribution.
+4. KPI Computation
+The model monitors the inflow of patients into the road network along with a series of capacity KPIs defined in Deliverable D2.3 :
+•	Throughput (M) — flow of patients into the hospital.
+•	Efficiency (S) — performance of the network under stress.
+•	Redundancy (R) — availability of alternative pathways.
+•	Entropy / Satisfaction (Q) — patients' psychological stress levels during their transfer to the hospital.
+•	Energy KPI — fuel consumption associated with stop-and-go cycles (frequent decelerations and accelerations experienced during congestion), expressed as a percentage difference from the system's initial state.
+KPI fluctuations are presented to the user through a dedicated plot in the UI.
+5. Disruption Scenarios
+The disruption scenarios account for additional congestion surrounding the hospital, defined by its intensity and spatial extent, as well as road segment closures along the patients' corridors. The user can determine the parameters of each scenario and even apply any combination of these constraints to simulate complex multi-factor incidents.
+6. Response Strategies
+The model implements three shuttle-based responses in the UI :
+•	R1 — En-route shuttle: Mobilized within the patient origin area to collect and transport patients to the hospital on a priority basis.
+•	R2 — Hospital-deployed shuttle: Deployed from the AHEPA Hospital to retrieve the patient and transport them on a priority basis.
+•	R3 — Strategically positioned shuttle: Stationed in low-traffic zones with dynamic routing; the optimal routing capabilities enable the vehicle to avoid impedances.
+HOW TO USE IT
+The UI (Figure 5.8 in ) combines user-defined inputs with live outputs:
+Input Controls
+•	Traffic scenario selector — Choose one of three city-wide traffic states: average traffic, morning rush, or evening rush.
+•	Number of patients — A user-defined count that drives the inflow demand.
+•	Origin of patients — A user-defined origin area from which patients are drawn (along with their stochastic distribution) .
+•	Additional congestion around hospital — Two sliders: one for intensity and one for spatial extent (radius) of the congested area surrounding the hospital.
+•	Road segment closure — Toggle or select the closures along the patients' corridors.
+•	Multi-factor incident switch — Apply any combination of the above constraints simultaneously.
+•	Response selector — Toggle between the no-response baseline (do-nothing) and the three shuttles R1, R2, R3.
+Output Monitors & Plots
+•	Live KPI readouts — Current values for throughput (M), efficiency (S), redundancy (R), entropy/satisfaction (Q) and the energy KPI.
+•	KPI time-series plot — Graphical presentation of KPI fluctuations over the simulation run.
+•	Patient view — Spatial display showing patients as agents on the road network, the hospital at its location (with two entrance nodes) and the car agents populating the city.
+Running a Trial
+1.	Open the UI and select a traffic scenario (average / morning rush / evening rush).
+2.	Set the number of patients and their origin area.
+3.	Configure the congestion intensity and radius around the hospital.
+4.	Toggle a road segment closure along the corridor used by the patients.
+5.	Select Do-Nothing, R1, R2, or R3 as the response.
+6.	Press Setup and then Go; observe the KPI readouts and the time-series plot.
+THINGS TO NOTICE
+•	The saturation effect of the congested radius — Once a critical congestion radius is established around the hospital, the network reaches a capacity limit where further spatial expansion yields diminishing marginal impacts on travel times. Notice that the origin points do not affect the patients' speed reduction as the spatial extent of the congested area increases, suggesting that the uniform distribution of congestion across varying radii masks underlying structural bottlenecks.
+•	The Q-sensitivity to shuttle transfer during normal traffic — In the do-nothing baseline the Satisfaction (Q) rises sharply; under shuttle transfers Q can rise by roughly 99–101% depending on the strategy (compared to small efficiency drops of −0.21% to −0.38%), so the psychological stress KPI is highly responsive even when the network KPIs barely move.
+•	The energy trade-off under normal traffic — Energy consumption is slightly increased under shuttles during normal traffic conditions, contrary to the reductions observed in morning rush hours — a reminder that mobility interventions are not free of second-order costs.
+•	The local peak in R2/R3 speed under moderate additional congestion — Both R2 and, especially, R3 show a local peak in patient travel speed under moderate additional congestion, suggesting the respective responses perform more effectively under this specific level of congestion than under either lower or higher traffic densities . This is operationally useful: shuttle deployment intervals can be calibrated against real-time demand thresholds.
+•	R3 dominance at the network-wide scale — R3 is the most effective response in mitigating travel time delays. Its strategic positioning in low-traffic zones minimises exposure to localized congestion bottlenecks while its optimal routing capabilities enable the vehicle to avoid impedances.
+THINGS TO TRY
+•	Sweep the congestion-radius slider with a fixed low-intensity congestion and observe when the throughput plot saturates — replicating the diminishing-marginal-impact finding in Figure 5.6.
+•	Swap the traffic scenario between average, morning rush and evening rush for the same patient load and observe how Q (satisfaction/entropy) responds. In morning rush hours the energy KPI can decrease under shuttle transfer, while under normal traffic it increases — the same intervention has opposite second-order effects across demand regimes.
+•	Lock one origin area and run R1, R2 and R3 back-to-back under increasing congestion intensity. You should see the R2/R3 speed peak that locates the optimal demand threshold for shuttle deployment.
+•	Toggle road segment closures intersecting the patient corridor and compare R1 (en-route), R2 (hospital-deployed) and R3 (strategic) under the same closure footprint, matching the experiment in Figure 5.12.
+•	Combine a corridor closure with a low-intensity congestion radius around the hospital — a multi-factor incident that no single-source baseline test can reveal.
+•	Trial 50-replicate Monte Carlo runs for any given setup, mirroring the calibration methodology used to build baseline performance from the Google Maps API trail data, so that outputs are statistically robust.
+EXTENDING THE MODEL
+These extensions build directly on the documented limitations and design choices of the AHEPA pilot .
+•	Time-of-day dynamics. Feed the empirical 08:00–23:00 hourly distribution of admissions into a time-varying departure generator so that hospital inflow matches the documented peak-load profile rather than being a flat Poisson stream.
+•	Origin mix from the real admission matrix. Replace uniform random origins with the municipality-level origin matrix extracted from AHEPA records (January 2023 – September 2025) so the spatial distribution reflects the actual catchment area, including the municipal-unit breakdown in Figure 5.3.
+•	Ambulance co-simulation. Add an ambulance agent class that uses a different pathing logic (e.g., emergency-corridor pre-emption) and re-run R1–R3 with a mixed-share inflow, since the current model assumes the >80% private-car share.
+•	Real-time re-routing on patients. Allow patients to recompute shortest-path selections at every intersection tick rather than lock their route at departure, more accurately capturing stochastic travel durations under fluctuating emergency demand.
+•	Intersection-level congestion calibration. Currently intersections are local attractors with a generic profile. Link each node to its TomTom Traffic Index signature for fine-grained hotspots.
+•	R3 repositioning logic. Implement a closed-loop optimizer that, on each tick, re-positions the R3 shuttle to the lowest-congestion zone currently feeding the hospital, formalising the "dynamic routing" rule that is currently only qualitative.
+•	Equity-aware KPI. Extend the KPI set with an origin-sensitive Q, since the model currently shows that origin points do not speed patients differently under radius stress  — a counter-intuitive pattern worth investigating through an explicit household-level metric.
+NETLOGO FEATURES
+•	Multi-agent-class ontology in a single world — cars, patients, the hospital and the intersections/links structure are all agents that update on the same tick, enabling their interactions to be observed in one cohesive run.
+•	Network primitives (turtros on link-owned plots). Because the city is represented with intersections as nodes and road segments as links, the model uses NetLogo's built-in network primitives for shortest-path queries and congestion propagation, which is the natural fit for an undirected urban graph.
+•	view-updates driven plots. The KPI dashboard (M, S, R, Q, Energy) is rendered through one plot that aggregates multiple time-series — a workaround to display a high-dimensional KPI panel without cluttering the interface.
+•	Stochasticity via random-normal and random-float. With 50-trial calibration per origin being the baseline methodology, the go procedure relies on stochastic duration draws on every tick to mirror the variable travel durations observed during rush hours.
+•	Scenario branching by chooser/slider composition. The UI is built from one chooser (traffic scenario) composed with multiple sliders (patient count, congestion intensity, congestion radius, response strategy). This lets the same code path take dramatically different parameter sets without forking.
+•	Patch-based congestion attractors. Patches at intersections carry a congestion value that cars and patients read at each tick. This patch-level read is a clean reuse of NetLogo's spatial primitives rather than maintaining a parallel graph data structure.
+•	Composite "incident" switch. A single boolean (multi-factor-incident?) overrides the closure and congestion sliders simultaneously, which is the practical workaround for a NetLogo setup procedure that needs to accept correlated parameter sets without rewriting inputs.
+RELATED MODELS
+The AHEPA Hospital pilot is one of three case studies developed under the umbrella DSS framework of D3.4, and its ontology was crafted to be compatible with the other pilots:
+•	Bratislava model — Same DSS framework but modelled around the Danube river crossing, with ferry network accessibility, population density and a socioeconomic vulnerability classification (travellers with income below half the population average are flagged as vulnerable). Origin distributions and modal splits are drawn from a 2019 official report.
+•	Larissa model — Same DSS framework but oriented around a flood-disruption scenario, modal share and pedestrian/car speeds supplied by the user, and a flood-prone area mapped from historical records. Outputs include completed trips plus the D2.3 capacity/efficiency/equity KPIs.
+•	Odessa model — A sibling evacuation case study where edges are modelled as links, nodes (intersections, shelters, evacuation points) are stationary agents, and civilians transform from residents to pedestrians or cars depending on their chosen mode. Like AHEPA, it imports road networks from OpenStreetMaps and processes them in QGIS 3.40.
+All pilots — AHEPA, Bratislava, Larissa and Odessa — share the ODD protocol introduced in the DSS framework (Section 4 of ), which the present Model Description follows.
+CREDITS AND REFERENCES
+•	Source deliverable: Tzioutziou, A., Tsami, M., Xenidis, Y., et al.. D3.4 Mobility Triage Analysis DSS. AntifragiCity Project, 2026. Section 5.3.1 — AHEPA Hospital.
+•	TomTom Traffic Index — Baseline for traffic levels and travel durations across the city of Thessaloniki..
+•	AHEPA Hospital admissions data — Records for incoming emergency admissions from January 2023 to September 2025 used to derive origin–destination matrices.
